@@ -139,13 +139,6 @@ export default function Register() {
               Create Account
             </button>
           </div>
-
-          <p className="text-xs text-gray-400 text-center">
-            By signing up, you agree to our{' '}
-            <a href="#" className="text-red-500 hover:text-red-400">Terms of Service</a>
-            {' '}and{' '}
-            <a href="#" className="text-red-500 hover:text-red-400">Privacy Policy</a>
-          </p>
         </form>
       </motion.div>
     </div>
