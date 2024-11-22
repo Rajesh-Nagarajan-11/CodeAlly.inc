@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-  lastActive: {
+  lastactive: {
     type: Date,
     default: Date.now
   }
