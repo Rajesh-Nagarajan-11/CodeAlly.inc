@@ -1,5 +1,5 @@
 import express from 'express';  // Use 'import' for express
-import { authenticateJWT, getUserProfile } from '../controllers/user.js';  // Use 'import' for functions
+import { authenticateJWT, getUserProfile } from '../dbhandle/controllers/user.js';  // Use 'import' for functions
 
 const router = express.Router();
 
