@@ -1,10 +1,9 @@
-import express from 'express';
-import { getProfile, updateProfile } from '../controllers/user.js';
-import { auth } from '../middleware/auth.js';
+import express from 'express';  // Use 'import' for express
+import { authenticateJWT, getUserProfile } from '../controllers/user.js';  // Use 'import' for functions
 
 const router = express.Router();
 
-router.get('/profile', auth, getProfile);
-router.put('/profile', auth, updateProfile);
+// Get user profile (protected route)
+router.get('/profile', authenticateJWT, getUserProfile);
 
-export default router;
+export default router;  // Use 'export default' for exporting the router

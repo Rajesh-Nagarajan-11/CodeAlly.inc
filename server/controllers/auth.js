@@ -1,58 +1,57 @@
+import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import User from '../models/User.js';
+import User from '../models/User.js'; // Ensure this file uses ES modules
 
-export const register = async (req, res) => {
+const JWT_SECRET = '2899556f8190993d5e8c37324e93c2ea4a871fe44be47b9b97be62f8a316058c';
+
+// Register a new user
+export const registerUser = async (req, res) => {
+  const { fullName, email, leetcodeUsername, gfgUsername, password } = req.body;
+
   try {
-    const { name, email, password } = req.body;
-    
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: 'Email already registered' });
-    }
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = new User({ name, email, password });
-    await user.save();
-
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-    
-    res.status(201).json({
-      token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email
-      }
+    // Create a new user
+    const newUser = new User({
+      fullName,
+      email,
+      leetcodeUsername,
+      gfgUsername,
+      password: hashedPassword,
     });
-  } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+
+    // Save the user in the database
+    await newUser.save();
+
+    res.status(201).json({ message: 'User registered successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Error registering user', error: err.message });
   }
 };
 
-export const login = async (req, res) => {
+// Login user
+export const loginUser = async (req, res) => {
+  const { email, password } = req.body;
+
   try {
-    const { email, password } = req.body;
-    
+    // Find the user by email
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+      return res.status(400).json({ message: 'User not found' });
     }
 
-    const isMatch = await user.comparePassword(password);
+    // Compare entered password with hashed password
+    const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-    
-    res.json({
-      token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email
-      }
-    });
-  } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    // Generate a JWT token
+    const token = jwt.sign({ userId: user._id, email: user.email }, JWT_SECRET, { expiresIn: '1d' });
+
+    res.status(200).json({ message: 'Login successful', token });
+  } catch (err) {
+    res.status(500).json({ message: 'Error logging in', error: err.message });
   }
 };

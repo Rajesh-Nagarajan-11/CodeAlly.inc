@@ -28,7 +28,8 @@ mongoose.connect(process.env.MONGODB_URI)
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-  console.log("http Endpoints : \n  http://localhost:3000/auth/api/login : User login , Method = POST \n  http://localhost:3000/auth/api/register : New user Register , method = POST");
+  console.log("http Endpoints : \n  http://localhost:3000/api/auth/login : User login , Method = POST \n  http://localhost:3000/api/auth/register : New user Register , method = POST");
+  console.log("  http://localhost:3000/api/user/profile : get user details , method=GET")
   console.log("  http://localhost:3000/leetcode/username : get leetcode stats , method=GET \n  http://localhost:3000/leetcode/username/solved : Get No of solved problems , method = GET");
   console.log("  http://localhost:3000/leetcode/username/badges : Get badges earned by users , method = GET");
   console.log("  http://localhost:3000/gfg/?userName=username : Get GfG stats , method = GET");

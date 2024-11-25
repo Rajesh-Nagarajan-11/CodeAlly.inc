@@ -1,15 +1,46 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Trophy } from 'lucide-react';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false); // For loading state
+  const [error, setError] = useState(''); // For error messages
+  const navigate = useNavigate(); // For navigation after login
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic
+    setLoading(true);
+    setError('');
+
+    try {
+      // Making the login API request
+      const response = await fetch('http://localhost:3000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Invalid email or password');
+      }
+
+      const data = await response.json();
+      const { token } = data; // Assuming the response contains the token
+
+      // Save the JWT token in localStorage
+      localStorage.setItem('token', token);
+
+      // Navigate to the dashboard or home page after successful login
+      navigate('/dashboard'); // Replace with your dashboard route
+    } catch (err) {
+      setError('Failed to log in. Please check your credentials '+ err);
+      setLoading(false);
+    }
   };
 
   return (
@@ -21,7 +52,7 @@ export default function Login() {
           className="w-full h-full object-cover opacity-5"
         />
       </div>
-      
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -42,7 +73,7 @@ export default function Login() {
             </Link>
           </p>
         </div>
-        
+
         <form className="mt-8 space-y-6 bg-white/10 backdrop-blur-lg p-8 rounded-xl" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
@@ -59,7 +90,7 @@ export default function Login() {
                 placeholder="Enter your email"
               />
             </div>
-            
+
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-300">
                 Password
@@ -76,31 +107,15 @@ export default function Login() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="remember-me"
-                type="checkbox"
-                className="h-4 w-4 bg-gray-800 border-gray-700 rounded text-red-500 focus:ring-red-500"
-              />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-300">
-                Remember me
-              </label>
-            </div>
-
-            <div className="text-sm">
-              <a href="#" className="font-medium text-red-500 hover:text-red-400">
-                Forgot password?
-              </a>
-            </div>
-          </div>
+          {error && <p className="text-sm text-red-500">{error}</p>} {/* Error message */}
 
           <div>
             <button
               type="submit"
               className="group relative w-full flex justify-center py-3 px-4 border border-transparent rounded-md text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
+              disabled={loading}
             >
-              Sign in
+              {loading ? 'Signing in...' : 'Sign in'}
             </button>
           </div>
         </form>
