@@ -51,7 +51,16 @@ router.use((req, _res, next) => {
   console.log('Requested URL:', req.originalUrl);
   next();
 });
-
+router.use(
+  '/:username*',
+  (req, _res ,next) => {
+    req.body = {
+      username: req.params.username,
+      limit: req.query.limit,
+    };
+    next();
+  }
+);
 
 router.get('/skillStats/:username', (req, res) => {
   const { username } = req.params;

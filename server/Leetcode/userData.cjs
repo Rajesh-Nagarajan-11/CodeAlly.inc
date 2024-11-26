@@ -21,9 +21,9 @@ const formatUserData = (data) => ({
 
 // Format Badges Data
 const formatBadgesData = (data) => ({
-  badgesCount: data.matchedUser.badges.length,
-  badges: data.matchedUser.badges,
-  upcomingBadges: data.matchedUser.upcomingBadges,
+  //badgesCount: data.matchedUser.badges.length,
+  //badges: data.matchedUser.badges,
+  //upcomingBadges: data.matchedUser.upcomingBadges,
   activeBadge: data.matchedUser.activeBadge,
 });
 
@@ -47,8 +47,8 @@ const formatSolvedProblemsData = (data) => ({
   easySolved: data.matchedUser.submitStats.acSubmissionNum[1].count,
   mediumSolved: data.matchedUser.submitStats.acSubmissionNum[2].count,
   hardSolved: data.matchedUser.submitStats.acSubmissionNum[3].count,
-  totalSubmissionNum: data.matchedUser.submitStats.totalSubmissionNum,
-  acSubmissionNum: data.matchedUser.submitStats.acSubmissionNum,
+  //totalSubmissionNum: data.matchedUser.submitStats.totalSubmissionNum,
+  //acSubmissionNum: data.matchedUser.submitStats.acSubmissionNum,
 });
 
 
