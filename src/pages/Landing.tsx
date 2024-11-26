@@ -73,16 +73,9 @@ export default function Landing() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
-              {
-                icon: Code,
-                title: "Interactive Challenges",
-                description: "Practice with real-world coding challenges that test your problem-solving skills"
-              },
-              {
-                icon: Brain,
-                title: "Smart Learning Path",
-                description: "Personalized curriculum that adapts to your skill level and learning pace"
-              },
+              
+              
+          
               {
                 icon: Trophy,
                 title: "Achievement System",
@@ -93,11 +86,7 @@ export default function Landing() {
                 title: "Performance Analytics",
                 description: "Detailed insights into your coding performance and areas for improvement"
               },
-              {
-                icon: Users,
-                title: "Community Support",
-                description: "Connect with fellow developers and learn from their experiences"
-              },
+            
               {
                 icon: Target,
                 title: "Goal Tracking",
