@@ -41,7 +41,6 @@ const formatContestData = (data) => ({
 });
 
 
-
 // Format Solved Problems Data
 const formatSolvedProblemsData = (data) => ({
   solvedProblem: data.matchedUser.submitStats.acSubmissionNum[0].count,
@@ -51,10 +50,6 @@ const formatSolvedProblemsData = (data) => ({
   totalSubmissionNum: data.matchedUser.submitStats.totalSubmissionNum,
   acSubmissionNum: data.matchedUser.submitStats.acSubmissionNum,
 });
-
-
-
-
 
 
 // Export everything

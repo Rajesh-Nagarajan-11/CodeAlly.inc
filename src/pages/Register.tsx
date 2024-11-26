@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
-import { Trophy, Github, Eye, EyeOff } from 'lucide-react';
+import { Trophy, Eye, EyeOff } from 'lucide-react';
 
 interface FormData {
   fullName: string;
@@ -113,11 +113,6 @@ export default function Register() {
             </Link>
           </p>
         </div>
-
-        <button className="w-full flex items-center justify-center gap-2 bg-gray-800 text-white py-3 px-4 rounded-md hover:bg-gray-700 transition-colors">
-          <Github className="h-5 w-5" />
-          Continue with GitHub
-        </button>
 
         <div className="relative">
           <div className="absolute inset-0 flex items-center">

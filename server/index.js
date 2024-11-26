@@ -30,6 +30,7 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log("http Endpoints : \n  http://localhost:3000/api/auth/login : User login , Method = POST \n  http://localhost:3000/api/auth/register : New user Register , method = POST");
   console.log("  http://localhost:3000/api/user/profile : get user details , method=GET")
+  console.log("  http://localhost:3000/leetcode/skillStats/username : get skill Stats , method =GET")
   console.log("  http://localhost:3000/leetcode/username : get leetcode stats , method=GET \n  http://localhost:3000/leetcode/username/solved : Get No of solved problems , method = GET");
   console.log("  http://localhost:3000/leetcode/username/badges : Get badges earned by users , method = GET");
   console.log("  http://localhost:3000/gfg/?userName=username : Get GfG stats , method = GET");

@@ -67,4 +67,5 @@ query getUserProfile($username: String!) {
     }
 }`;
 
+
 module.exports = query;
