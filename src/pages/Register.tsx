@@ -70,7 +70,7 @@ export default function Register() {
           navigate('/login');
         }, 2000); // Delay navigation to allow success message display
       } else {
-        setError('Failed to register. Please try again later.');
+        setError('Failed to register. Please try again later.'+error);
       }
     } catch (err) {
       console.error('Error registering user:', err);

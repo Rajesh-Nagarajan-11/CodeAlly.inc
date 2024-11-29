@@ -22,9 +22,10 @@ const formatUserData = (data) => ({
 // Format Badges Data
 const formatBadgesData = (data) => ({
   //badgesCount: data.matchedUser.badges.length,
-  //badges: data.matchedUser.badges,
+  badges: data.matchedUser.badges,
   //upcomingBadges: data.matchedUser.upcomingBadges,
-  activeBadge: data.matchedUser.activeBadge,
+  //activeBadge: data.matchedUser.activeBadge,
+
 });
 
 // Format Contest Data

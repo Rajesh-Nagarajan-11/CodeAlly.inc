@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Code, Brain, Award } from 'lucide-react';
+import { Code, Brain, Award,Signal,SignalLowIcon,SignalMediumIcon} from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { StatsCard } from '../components/StatsCard';
 
@@ -15,6 +15,7 @@ interface UserProfile {
     gfgUsername: string;
   };
 }
+
 
 interface LeetCodeStats {
   solvedProblem: number;
@@ -36,18 +37,32 @@ interface GfGstats{
     }
 }
 interface leetbadger{
-  activeBadge: {
-    id: string,
-    displayName: string,
-    icon: string,
-    creationDate: Date
-}
+  badges:[
+    {
+      id:string,
+      displayName:string,
+      icon:string,
+      CreationDate : string
+    }
+]
 }
 
+interface SkillStats {
+  data: {
+    matchedUser: {
+      tagProblemCounts: {
+        advanced: { tagName :string,tagSlug: string, problemsSolved: number }[];
+        intermediate: { tagName:string,tagSlug: string, problemsSolved: number }[];
+        fundamental: { tagName:string,tagSlug: string; problemsSolved: number }[];
+      };
+    };
+  };
+}
 export default function Dashboard() {
   const [userData, setUserData] = useState<UserProfile | null>(null); // Type the state as UserProfile or null
   const [leetcodeStats, setLeetCodeStats] = useState<LeetCodeStats | null>(null);
   const[gfgstats,setgfgstats]=useState <GfGstats | null> (null);
+  const[skillstats,setskillstats]=useState<SkillStats |null> (null);
   const[leetbadge,setleetbadge]=useState<leetbadger | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -69,7 +84,6 @@ export default function Dashboard() {
           
           // Fetch LeetCode stats using the username from the user data
           if (data.user.leetcodeUsername) {
-            // No headers required for LeetCode stats
             fetch(`http://localhost:3000/leetcode/${data.user.leetcodeUsername}/solved`, {
               method: 'GET',
             })
@@ -81,6 +95,7 @@ export default function Dashboard() {
                 console.error('Error fetching LeetCode stats:', error);
               });
           }
+
           if(data.user.gfgUsername)
           {
             fetch(`http://localhost:3000/gfg/?userName=${data.user.gfgUsername}`,{
@@ -91,7 +106,7 @@ export default function Dashboard() {
               setgfgstats(gfgstats);
              })
             .catch((error) => {
-             console.error('Error fetching LeetCode stats:', error);
+             console.error('Error fetching GFG stats:', error);
              });
           }
         
@@ -106,12 +121,36 @@ export default function Dashboard() {
               return response.json();
             })
             .then((leetbadge) => {
-              setleetbadge(leetbadge); // Ensure setleetbadge is defined and usable
+              setleetbadge(leetbadge); 
             })
             .catch((error) => {
-              console.error('Error fetching LeetCode stats:', error);
+              console.error('Error fetching LeetCode Badge:', error);
             });
         }
+
+        if(data.user.leetcodeUsername)
+        {
+          fetch(`http://localhost:3000/leetcode/skillStats/${data.user.leetcodeUsername}`,{
+            method:'GET',
+          }).then((response)=>
+          {
+            if(!response.ok)
+              throw new Error(`HTTP error ! status : ${response.status}`);
+              return response.json()
+          })
+          .then((skillstats)=>{
+             setskillstats(skillstats);
+          })
+          .catch((error)=>{
+            console.log('Error Fecthing leetcode skill stats :'+error)
+          })
+        }
+      //console.log(skillstats?.data.matchedUser.tagProblemCounts.fundamental);
+      //fundamental?.forEach(element => {
+      //console.log(element.tagName)
+      //console.log(element.problemsSolved)
+      // });
+      
     })
         .catch((error) => {
           console.error('Error fetching user profile:', error);
@@ -127,6 +166,30 @@ export default function Dashboard() {
     return localStorage.getItem('token'); // Change this to whatever method you prefer
   };
 
+  const isFullLink=(link:string)=>
+  {
+    const checklink:string="https://assets.leetcode.com";
+    const checklink2:string="https://leetcode.com";
+    return  link.match(checklink) ||link.match(checklink2)
+
+  }
+  const fundamental =skillstats?.data.matchedUser.tagProblemCounts.fundamental
+  let fundamentalcnt=0;
+  fundamental?.forEach(element => {
+    fundamentalcnt+=element.problemsSolved;
+  });
+  
+  const intermediate =skillstats?.data.matchedUser.tagProblemCounts.intermediate;
+  let intermediatecnt=0;
+  intermediate?.forEach(element=>{
+    intermediatecnt+=element.problemsSolved;
+  })
+  const advanced =skillstats?.data.matchedUser.tagProblemCounts.advanced;
+  let advancedcnt=0;
+  advanced?.forEach(element =>{
+    advancedcnt+=element.problemsSolved;
+  })
+  ; 
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -159,15 +222,15 @@ export default function Dashboard() {
               <div className="mt-2 space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span>Easy Problems:</span>
-                  <span className="font-medium">{leetcodeStats?.easySolved +' / 839'|| 'Loading...'}</span>
+                  <span className="font-medium">{leetcodeStats?.easySolved ==0? '0 / 839' :leetcodeStats?.easySolved+' / 839'|| 'Loading...'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Medium Problems:</span>
-                  <span className="font-medium">{leetcodeStats?.mediumSolved +' / 1760'|| 'Loading...'}</span>
+                  <span className="font-medium">{leetcodeStats?.mediumSolved ==0?'0 / 1760 ' :leetcodeStats?.mediumSolved+'/ 1760'|| 'Loading...'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Hard Problems:</span>
-                  <span className="font-medium">{leetcodeStats?.hardSolved ==0?'0 / 769':leetcodeStats?.hardSolved+' / 769'}</span>
+                  <span className="font-medium">{leetcodeStats?.hardSolved ==0?'0 / 769':leetcodeStats?.hardSolved+' / 769'  || 'Loading'}</span>
                 </div>
               </div>
             </StatsCard>
@@ -199,41 +262,70 @@ export default function Dashboard() {
               title="Recent Award"
               icon={Award}
               color="text-yellow-500"
-              imageUrl={leetbadge?leetbadge.activeBadge.icon :'https://img.freepik.com/free-vector/oops-404-error-with-broken-robot-concept-illustration_114360-5529.jpg'}
-              imageAlt="LeetCode Achievement Badge"
+              imageUrl={
+                leetbadge?.badges[0]!=null?isFullLink(leetbadge.badges[0].icon)?leetbadge.badges[0].icon:"https://leetcode.com"+leetbadge.badges[0].icon:"https://static.vecteezy.com/system/resources/previews/008/255/803/non_2x/page-not-found-error-404-system-updates-uploading-computing-operation-installation-programs-system-maintenance-a-hand-drawn-layout-template-of-a-broken-robot-illustration-vector.jpg"}
               className="hover:shadow-lg transition-shadow duration-300">
               <span className="text-black text-center block">
-              {leetbadge?leetbadge?.activeBadge.displayName:''}
+              {leetbadge?.badges[0]!=null?leetbadge?.badges[0].displayName:''}
               </span>
 
               </StatsCard>
             
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="bg-white shadow rounded-lg p-6"
-            >
-              <h3 className="text-lg font-semibold mb-4">Skill Progress</h3>
-              <ul className="space-y-3">
-                <li className="flex justify-between items-center">
-                  <span className="text-gray-600">Array Problems</span>
-                  <span className="font-semibold">15/20</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  
+            <StatsCard
+            title="Fundamentals"
+            value={fundamentalcnt + ' Points'}  // You can replace this with a dynamic value if needed
+            icon={SignalLowIcon}
+            color="text-green-500"
+            className="hover:shadow-lg transition-shadow duration-300"
+          >
+            <ul className="mt-2 text-sm space-y-1">
+              {fundamental?.map((element, index) => (
+                <li key={index}>
+                  {element.tagName} : {element.problemsSolved}
                 </li>
-                <li className="flex justify-between items-center">
-                  <span className="text-gray-600">String Manipulation</span>
-                  <span className="font-semibold">12/15</span>
+              ))}
+            </ul>
+          </StatsCard>
+
+
+          <StatsCard
+            title="Intermediate"
+            value={intermediatecnt +' Points'}
+            icon={SignalMediumIcon}
+            color="text-orange-500"
+            className="hover:shadow-lg transition-shadow duration-300"
+          >
+            <ul className="mt-2 text-sm space-y-1">
+              {intermediate?.map((element, index) => (
+                <li key={index}>
+                  {element.tagName} : {element.problemsSolved}
                 </li>
-                <li className="flex justify-between items-center">
-                  <span className="text-gray-600">Tree Navigation</span>
-                  <span className="font-semibold">8/10</span>
+              ))}
+            </ul>
+          </StatsCard>
+
+          <StatsCard
+            title="Advanced"
+            value={advancedcnt+' Points'}
+            icon={Signal}
+            color="text-red-500"
+            className="hover:shadow-lg transition-shadow duration-300"
+          >
+            <ul className="mt-2 text-sm space-y-1">
+            {advanced?.map((element, index) => (
+                <li key={index}>
+                  {element.tagName} : {element.problemsSolved}
                 </li>
-              </ul>
-            </motion.div>
-          </div>
+              ))}
+            </ul>
+          </StatsCard>
+        </div>
+
+
         </motion.div>
       </div>
     </div>

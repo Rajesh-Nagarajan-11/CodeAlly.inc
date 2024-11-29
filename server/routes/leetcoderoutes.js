@@ -36,17 +36,17 @@ const handleRequest = async (res, query, params) => {
 
 
 // API rate limiter
-const limiter = rateLimit({
+/*const limiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  limit: 60, // Max 60 requests per hour
+  limit: 10000, // Max 60 requests per hour
   standardHeaders: true, // Include rate limit info in response headers
   legacyHeaders: false, // Disable legacy headers
   message: 'Too many requests from this IP, try again in 1 hour',
-});
+});*/
 
 // Middleware setup
 router.use(cors()); // Enable all CORS requests
-router.use(limiter); // Rate limit all API routes
+//router.use(limiter); // Rate limit all API routes
 router.use((req, _res, next) => {
   console.log('Requested URL:', req.originalUrl);
   next();
@@ -71,6 +71,7 @@ router.get('/skillStats/:username', (req, res) => {
 router.get('/:username', leetCode.userData); // Get user profile details
 router.get('/:username/badges', leetCode.userBadges); // Get user badges
 router.get('/:username/solved', leetCode.solvedProblem); // Get solved problems
+
 
 
 
