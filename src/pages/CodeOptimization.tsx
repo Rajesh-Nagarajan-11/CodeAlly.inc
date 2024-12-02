@@ -1,9 +1,11 @@
 import { motion } from 'framer-motion';
 import { Clock, Database, Plus } from 'lucide-react';
 import CodeEditor from '../components/CodeEditor';
+import Navbar from '../components/Navbar';
 
 export default function CodeOptimization() {
   return (
+    <><Navbar/>
     <div className="min-h-screen bg-gray-50">
       <div className="bg-red-500 text-white py-4 px-8 flex justify-between items-center">
         <h1 className="text-2xl font-bold">Code Optimization Analysis</h1>
@@ -140,6 +142,6 @@ export default function CodeOptimization() {
           </motion.div>
         </div>
       </div>
-    </div>
+    </div></>
   );
 }

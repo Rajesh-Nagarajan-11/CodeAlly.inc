@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { Trophy, Eye, EyeOff } from 'lucide-react';
+import Navbar from '../components/Navbar';
 
 interface FormData {
   fullName: string;
@@ -84,13 +85,12 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <><Navbar /><div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="absolute inset-0 overflow-hidden">
         <img
-          src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97"
+          src="https://images.unsplash.com/photo-1516116216624-53e697fedbea"
           alt="Background"
-          className="w-full h-full object-cover opacity-5"
-        />
+          className="w-full h-full object-cover opacity-5" />
       </div>
 
       <motion.div
@@ -140,8 +140,7 @@ export default function Register() {
                 value={formData.fullName}
                 onChange={handleChange}
                 className="mt-1 block w-full bg-gray-800/50 border border-gray-700 rounded-md px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                placeholder="Enter your full name"
-              />
+                placeholder="Enter your full name" />
             </div>
 
             <div>
@@ -155,8 +154,7 @@ export default function Register() {
                 value={formData.email}
                 onChange={handleChange}
                 className="mt-1 block w-full bg-gray-800/50 border border-gray-700 rounded-md px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                placeholder="Enter your email"
-              />
+                placeholder="Enter your email" />
             </div>
 
             <div>
@@ -170,8 +168,7 @@ export default function Register() {
                 value={formData.leetcodeUsername}
                 onChange={handleChange}
                 className="mt-1 block w-full bg-gray-800/50 border border-gray-700 rounded-md px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                placeholder="Enter your LeetCode username"
-              />
+                placeholder="Enter your LeetCode username" />
             </div>
 
             <div>
@@ -185,8 +182,7 @@ export default function Register() {
                 value={formData.gfgUsername}
                 onChange={handleChange}
                 className="mt-1 block w-full bg-gray-800/50 border border-gray-700 rounded-md px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                placeholder="Enter your GFG username"
-              />
+                placeholder="Enter your GFG username" />
             </div>
 
             <div>
@@ -201,8 +197,7 @@ export default function Register() {
                   value={formData.password}
                   onChange={handleChange}
                   className="mt-1 block w-full bg-gray-800/50 border border-gray-700 rounded-md px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                  placeholder="Create a password"
-                />
+                  placeholder="Create a password" />
                 <div
                   onClick={togglePasswordVisibility}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
@@ -227,6 +222,6 @@ export default function Register() {
           </div>
         </form>
       </motion.div>
-    </div>
+    </div></>
   );
 }

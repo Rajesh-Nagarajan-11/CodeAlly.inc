@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { Trophy } from 'lucide-react';
+import Navbar from '../components/Navbar';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -44,13 +45,12 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <><Navbar /><div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="absolute inset-0 overflow-hidden">
         <img
           src="https://images.unsplash.com/photo-1516116216624-53e697fedbea"
           alt="Background"
-          className="w-full h-full object-cover opacity-5"
-        />
+          className="w-full h-full object-cover opacity-5" />
       </div>
 
       <motion.div
@@ -87,8 +87,7 @@ export default function Login() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="mt-1 block w-full bg-gray-800/50 border border-gray-700 rounded-md px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                placeholder="Enter your email"
-              />
+                placeholder="Enter your email" />
             </div>
 
             <div>
@@ -102,8 +101,7 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="mt-1 block w-full bg-gray-800/50 border border-gray-700 rounded-md px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                placeholder="Enter your password"
-              />
+                placeholder="Enter your password" />
             </div>
           </div>
 
@@ -120,6 +118,6 @@ export default function Login() {
           </div>
         </form>
       </motion.div>
-    </div>
+    </div></>
   );
 }

@@ -1,7 +1,8 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { Code, Brain, Trophy, Rocket, Users, Target } from 'lucide-react';
+import {Trophy, Rocket, Target } from 'lucide-react';
 import { useRef } from 'react';
 import { Link } from 'react-router-dom';
+import Navbar from '../components/Navbar';
 
 export default function Landing() {
   const ref = useRef(null);
@@ -14,10 +15,10 @@ export default function Landing() {
   const opacity = useTransform(scrollYProgress, [0, 0.5, 1], [1, 0.5, 0]);
 
   return (
-    <div className="relative overflow-hidden">
+    <><Navbar /><div className="relative overflow-hidden">
       {/* Hero Section with Parallax */}
       <div ref={ref} className="relative h-screen">
-        <motion.div 
+        <motion.div
           style={{ y, opacity }}
           className="absolute inset-0"
         >
@@ -25,10 +26,9 @@ export default function Landing() {
           <img
             src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97"
             alt="Hero"
-            className="w-full h-full object-cover"
-          />
+            className="w-full h-full object-cover" />
         </motion.div>
-        
+
         <div className="relative z-20 h-full flex items-center justify-center text-white">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -73,9 +73,6 @@ export default function Landing() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
-              
-              
-          
               {
                 icon: Trophy,
                 title: "Achievement System",
@@ -86,7 +83,7 @@ export default function Landing() {
                 title: "Performance Analytics",
                 description: "Detailed insights into your coding performance and areas for improvement"
               },
-            
+
               {
                 icon: Target,
                 title: "Goal Tracking",
@@ -115,8 +112,7 @@ export default function Landing() {
           <img
             src="https://images.unsplash.com/photo-1516116216624-53e697fedbea"
             alt="Background"
-            className="w-full h-full object-cover opacity-20"
-          />
+            className="w-full h-full object-cover opacity-20" />
         </div>
         <div className="relative z-10 max-w-7xl mx-auto px-4 text-center">
           <motion.div
@@ -140,6 +136,6 @@ export default function Landing() {
           </motion.div>
         </div>
       </div>
-    </div>
+    </div></>
   );
 }

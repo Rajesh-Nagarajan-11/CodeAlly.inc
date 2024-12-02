@@ -1,58 +1,59 @@
-import * as cheerio from 'cheerio';
+import cheerio from 'cheerio';
 import axios from 'axios';
 
-// Middleware to validate if username is provided
+// Middleware to validate if the username is provided
 export const validateQuery = (req, res, next) => {
-    if (!req.query.userName) {
-        return res.status(400).send({ "error": "add your geeksForGeeks user Name in link eg /?userName=<YOUR_USER_NAME>" });
+    const { userName } = req.query;
+    if (!userName) {
+        return res.status(400).json({
+            error: "Please provide a GeeksforGeeks username as a query parameter, e.g., /?userName=<YOUR_USER_NAME>"
+        });
     }
     next();
-}
+};
 
 // Endpoint to scrape stats from GeeksforGeeks
 export const getStat = async (req, res, next) => {
-    let url = "https://auth.geeksforgeeks.org/user/" + req.query.userName + "/practice/";
+    const userName = req.query.userName;
+    const url = `https://auth.geeksforgeeks.org/user/${userName}/practice/`;
+
     try {
         const { data: htmlData } = await axios.get(url);
         const $ = cheerio.load(htmlData);
-        let values = {};
-        let problemDificultyTag = ["School", "Basic", "Easy", "Medium", "Hard"];
-        let k = 0, totalProblemSolved = 0;
 
-        let scrapedData = $('.tabs.tabs-fixed-width.linksTypeProblem');
+        const stats = {};
+        let totalProblemsSolved = 0;
 
-        if (scrapedData.length == 0) return res.status(400).send({ error: "userName does not exist or has not solved any problem on GeeksforGeeks" });
-
-        let rawData = $(scrapedData[0]).text();
-        for (let i = 0; i < rawData.length; i++) {
-            if (rawData[i] == '(') {
-                let tempStart = i + 1;
-                while (rawData[i] != ')') {
-                    i++;
-                }
-                let tempProblems = parseInt(rawData.substring(tempStart, i));
-                values[problemDificultyTag[k++]] = tempProblems;
-                totalProblemSolved += tempProblems;
+        // Convert the jQuery collection to an array and use forEach
+        const problemElements = $('.problemNavbar_head_nav__a4K6P').toArray();
+        
+        problemElements.forEach((element) => {
+            const text = $(element).text().trim();
+            // Split the text based on parentheses
+            const parts = text.split('(');
+            if (parts.length === 2) {
+                const label = parts[0].trim();
+                const count = parseInt(parts[1].replace(')', '').trim(), 10);
+                stats[label] = count;
+                totalProblemsSolved += count;
             }
-        }
+        });
 
-        values["userName"] = req.query.userName;
-        values["totalProblemsSolved"] = totalProblemSolved;
-        req.values = values;
+        req.values = { userName, totalProblemsSolved, details: stats };
         next();
-    } catch (error) {
-        return res.status(502).send({ error: error.message });
+    } catch {
+        res.status(502).json({
+            error: "Failed to fetch data from GeeksforGeeks. Please ensure the username is valid."
+        });
     }
-}
+};
 
-// Endpoint to send stats back as JSON
+// Endpoint to send stats as JSON
 export const sendStat = (req, res) => {
-    if (req.query.raw?.toLowerCase() === "y") {
-        return res.send(req.values);
-    }
-    res.send({
-        userName: req.values.userName,
-        totalProblemsSolved: req.values.totalProblemsSolved,
-        details: req.values
+    const stats = req.values;
+    res.json({
+        userName: stats.userName,
+        totalProblemsSolved: stats.totalProblemsSolved,
+        details: stats.details
     });
-}
+};

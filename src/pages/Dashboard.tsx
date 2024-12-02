@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Code, Brain, Award,Signal,SignalLowIcon,SignalMediumIcon} from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { StatsCard } from '../components/StatsCard';
+import Navbar from '../components/Navbar';
 
 
 
@@ -27,13 +28,11 @@ interface GfGstats{
     userName: string,
     totalProblemsSolved: number,
     details: {
-        School: number,
-        Basic: number,
-        Easy: number,
-        Medium: number,
-        Hard: number,
-        userName: string,
-        totalProblemsSolved: number
+        SCHOOL: number,
+        BASIC: number,
+        EASY: number,
+        MEDIUM: number,
+        HARD: number;   
     }
 }
 interface leetbadger{
@@ -80,7 +79,8 @@ export default function Dashboard() {
       })
         .then((response) => response.json())
         .then((data) => {
-          setUserData(data);  // Store the whole response in userData
+          setUserData(data); 
+          sessionStorage.setItem("username",data.user.fullName) // Store the whole response in userData
           
           // Fetch LeetCode stats using the username from the user data
           if (data.user.leetcodeUsername) {
@@ -191,7 +191,7 @@ export default function Dashboard() {
   })
   ; 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-gray-50 py-8">
+    <><Navbar /><div className="min-h-[calc(100vh-4rem)] bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -222,22 +222,22 @@ export default function Dashboard() {
               <div className="mt-2 space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span>Easy Problems:</span>
-                  <span className="font-medium">{leetcodeStats?.easySolved ==0? '0 / 839' :leetcodeStats?.easySolved+' / 839'|| 'Loading...'}</span>
+                  <span className="font-medium">{leetcodeStats?.easySolved == 0 ? '0 / 839' : leetcodeStats?.easySolved + ' / 839' || 'Loading...'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Medium Problems:</span>
-                  <span className="font-medium">{leetcodeStats?.mediumSolved ==0?'0 / 1760 ' :leetcodeStats?.mediumSolved+'/ 1760'|| 'Loading...'}</span>
+                  <span className="font-medium">{leetcodeStats?.mediumSolved == 0 ? '0 / 1760 ' : leetcodeStats?.mediumSolved + '/ 1760' || 'Loading...'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Hard Problems:</span>
-                  <span className="font-medium">{leetcodeStats?.hardSolved ==0?'0 / 769':leetcodeStats?.hardSolved+' / 769'  || 'Loading'}</span>
+                  <span className="font-medium">{leetcodeStats?.hardSolved == 0 ? '0 / 769' : leetcodeStats?.hardSolved + ' / 769' || 'Loading'}</span>
                 </div>
               </div>
             </StatsCard>
 
             <StatsCard
               title="GeeksforGeeks Stats"
-              value={gfgstats ? `${gfgstats.details.totalProblemsSolved}` : 'Loading...'}
+              value={gfgstats ? `${gfgstats.totalProblemsSolved}` : 'Loading...'}
               icon={Brain}
               color="text-green-500"
               className="hover:shadow-lg transition-shadow duration-300"
@@ -245,15 +245,15 @@ export default function Dashboard() {
               <div className="mt-2 space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span>Easy Problems:</span>
-                  <span className="font-medium">{gfgstats?.details.Easy==0?'0' :gfgstats?.details.Easy}</span>
+                  <span className="font-medium">{gfgstats?.details.EASY == 0 ? '0' : gfgstats?.details.EASY}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Medium Problems:</span>
-                  <span className="font-medium">{gfgstats?.details.Medium==0?'0' :gfgstats?.details.Medium}</span>
+                  <span className="font-medium">{gfgstats?.details.MEDIUM == 0 ? '0' : gfgstats?.details.MEDIUM}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Hard Problems:</span>
-                  <span className="font-medium">{gfgstats?.details.Hard==0?'0': gfgstats?.details.Hard}</span>
+                  <span className="font-medium">{gfgstats?.details.HARD == 0 ? '0' : gfgstats?.details.HARD}</span>
                 </div>
               </div>
             </StatsCard>
@@ -262,72 +262,71 @@ export default function Dashboard() {
               title="Recent Award"
               icon={Award}
               color="text-yellow-500"
-              imageUrl={
-                leetbadge?.badges[0]!=null?isFullLink(leetbadge.badges[0].icon)?leetbadge.badges[0].icon:"https://leetcode.com"+leetbadge.badges[0].icon:"https://static.vecteezy.com/system/resources/previews/008/255/803/non_2x/page-not-found-error-404-system-updates-uploading-computing-operation-installation-programs-system-maintenance-a-hand-drawn-layout-template-of-a-broken-robot-illustration-vector.jpg"}
+              imageUrl={leetbadge?.badges[0] != null ? isFullLink(leetbadge.badges[0].icon) ? leetbadge.badges[0].icon : "https://leetcode.com" + leetbadge.badges[0].icon : "https://static.vecteezy.com/system/resources/previews/008/255/803/non_2x/page-not-found-error-404-system-updates-uploading-computing-operation-installation-programs-system-maintenance-a-hand-drawn-layout-template-of-a-broken-robot-illustration-vector.jpg"}
               className="hover:shadow-lg transition-shadow duration-300">
               <span className="text-black text-center block">
-              {leetbadge?.badges[0]!=null?leetbadge?.badges[0].displayName:''}
+                {leetbadge?.badges[0] != null ? leetbadge?.badges[0].displayName : ''}
               </span>
 
-              </StatsCard>
-            
+            </StatsCard>
+
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-  
+
             <StatsCard
-            title="Fundamentals"
-            value={fundamentalcnt + ' Points'}  // You can replace this with a dynamic value if needed
-            icon={SignalLowIcon}
-            color="text-green-500"
-            className="hover:shadow-lg transition-shadow duration-300"
-          >
-            <ul className="mt-2 text-sm space-y-1">
-              {fundamental?.map((element, index) => (
-                <li key={index}>
-                  {element.tagName} : {element.problemsSolved}
-                </li>
-              ))}
-            </ul>
-          </StatsCard>
+              title="Fundamentals"
+              value={fundamentalcnt + ' Points'} // You can replace this with a dynamic value if needed
+              icon={SignalLowIcon}
+              color="text-green-500"
+              className="hover:shadow-lg transition-shadow duration-300"
+            >
+              <ul className="mt-2 text-sm space-y-1">
+                {fundamental?.map((element, index) => (
+                  <li key={index}>
+                    {element.tagName} : {element.problemsSolved}
+                  </li>
+                ))}
+              </ul>
+            </StatsCard>
 
 
-          <StatsCard
-            title="Intermediate"
-            value={intermediatecnt +' Points'}
-            icon={SignalMediumIcon}
-            color="text-orange-500"
-            className="hover:shadow-lg transition-shadow duration-300"
-          >
-            <ul className="mt-2 text-sm space-y-1">
-              {intermediate?.map((element, index) => (
-                <li key={index}>
-                  {element.tagName} : {element.problemsSolved}
-                </li>
-              ))}
-            </ul>
-          </StatsCard>
+            <StatsCard
+              title="Intermediate"
+              value={intermediatecnt + ' Points'}
+              icon={SignalMediumIcon}
+              color="text-orange-500"
+              className="hover:shadow-lg transition-shadow duration-300"
+            >
+              <ul className="mt-2 text-sm space-y-1">
+                {intermediate?.map((element, index) => (
+                  <li key={index}>
+                    {element.tagName} : {element.problemsSolved}
+                  </li>
+                ))}
+              </ul>
+            </StatsCard>
 
-          <StatsCard
-            title="Advanced"
-            value={advancedcnt+' Points'}
-            icon={Signal}
-            color="text-red-500"
-            className="hover:shadow-lg transition-shadow duration-300"
-          >
-            <ul className="mt-2 text-sm space-y-1">
-            {advanced?.map((element, index) => (
-                <li key={index}>
-                  {element.tagName} : {element.problemsSolved}
-                </li>
-              ))}
-            </ul>
-          </StatsCard>
-        </div>
+            <StatsCard
+              title="Advanced"
+              value={advancedcnt + ' Points'}
+              icon={Signal}
+              color="text-red-500"
+              className="hover:shadow-lg transition-shadow duration-300"
+            >
+              <ul className="mt-2 text-sm space-y-1">
+                {advanced?.map((element, index) => (
+                  <li key={index}>
+                    {element.tagName} : {element.problemsSolved}
+                  </li>
+                ))}
+              </ul>
+            </StatsCard>
+          </div>
 
 
         </motion.div>
       </div>
-    </div>
+    </div></>
   );
 }
