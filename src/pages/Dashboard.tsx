@@ -5,9 +5,6 @@ import { StatsCard } from '../components/StatsCard';
 import Navbar from '../components/Navbar';
 import PlatformStats from '../components/PlatformStats';
 
-
-
-
 // Define the interface for the response data
 interface UserProfile {
   user: {
@@ -67,6 +64,10 @@ interface SkillStats {
     };
   };
 }
+interface motivational{
+  date:Date;
+  motivational:string
+}
 export default function Dashboard() {
   const [userData, setUserData] = useState<UserProfile | null>(null); // Type the state as UserProfile or null
   const [leetcodeStats, setLeetCodeStats] = useState<LeetCodeStats | null>(null);
@@ -74,6 +75,7 @@ export default function Dashboard() {
   const[skillstats,setskillstats]=useState<SkillStats |null> (null);
   const[leetbadge,setleetbadge]=useState<leetbadger | null>(null);
   const[codeforcesStats,setcodeforcesStats]=useState<codeforcesStats |null>(null);
+  const[motivational,setmotivational]=useState<motivational |null>(null);
   const [loading, setLoading] = useState(true);
 
   // Fetch user profile data
@@ -179,7 +181,30 @@ export default function Dashboard() {
       //console.log(element.tagName)
       //console.log(element.problemsSolved)
       // });
-      
+      function getCurrentDate() {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+        const day = String(today.getDate()).padStart(2, '0');
+    
+        return `${year}-${month}-${day}`;
+    }
+    const date =getCurrentDate();
+    
+    fetch(`http://localhost:3000/motivational/${date}`, {
+      method: 'GET'
+      }).then((response)=>
+        {
+          if(!response.ok)
+            throw new Error(`HTTP error ! status : ${response.status}`);
+            return response.json()
+        })
+        .then((motivational)=>{
+          setmotivational(motivational);
+        })
+        .catch((error)=>{
+          console.log('Error Fecthing motivational :'+error)
+        })
     })
         .catch((error) => {
           console.error('Error fetching user profile:', error);
@@ -241,9 +266,34 @@ export default function Dashboard() {
       violet: codeforcesStats?.extremesolved || 0,
     },
   ];
+
+  function calculateexp() {
+    // Initialize exp to 0 initially, and retrieve the stored value from localStorage if it exists
+    let exp = 0;  // Start with 0
   
-  ; 
-  return (
+    // Retrieve stored experience points from localStorage if available
+    //const storedExp = localStorage.getItem("exp");
+    //if (storedExp) {
+      //exp = parseInt(storedExp);  // Parse the value if it's not null
+    //}
+  
+    // Add experience points based on different stats
+    exp += leetcodeStats ? leetcodeStats?.solvedProblem * 5 : 0;
+    exp += gfgstats ? gfgstats.totalProblemsSolved * 5 : 0;
+    exp += codeforcesStats ? codeforcesStats.totalsolved * 10 : 0;
+    exp += fundamentalcnt * 2;
+    exp += intermediatecnt * 5;
+    exp += advancedcnt * 10;
+  
+    // Store the updated exp value back to localStorage
+    localStorage.setItem("exp", exp.toString()); // Store exp as a string
+  }
+  
+  // Call calculateexp on page load
+  calculateexp();
+  
+  
+    return (
     <><Navbar /><div className="min-h-[calc(100vh-4rem)] bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
@@ -256,12 +306,21 @@ export default function Dashboard() {
             <h1 className="text-2xl font-bold text-gray-900">
               {loading ? 'Loading...' : `Welcome back, ${userData?.user.fullName || 'User'}!`}
             </h1>
-            <Link
-              to="/code"
-              className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors"
-            >
-              Start Coding
-            </Link>
+            <div className="overflow-hidden whitespace-nowrap relative bg-white/10 max-w-[600px]">
+  <div className="animate-marquee inline-block">
+    <p className="text-lg font-bold text-red-600">
+      {motivational?.motivational}
+    </p>
+  </div>
+</div>
+
+<Link
+  to="/code"
+  className="bg-red-500 text-white px-6 py-3 rounded-md hover:bg-red-600 transition-colors mt-4 inline-block"
+>
+  Start Coding
+</Link>
+
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

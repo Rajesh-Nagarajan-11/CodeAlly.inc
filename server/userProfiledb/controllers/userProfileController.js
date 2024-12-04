@@ -56,21 +56,26 @@ const updateUserProfile = async (req, res) => {
   }
 };
 const displayUserProfile = async (req, res) => {
-    try {
-      const { username, email } = req.params;
-  
-      // Find user profile by username or email
-      const userProfile = await UserProfile.findOne({ $or: [{ username }, { email }] });
-  
-      if (!userProfile) {
-        return res.status(404).json({ message: 'User profile not found.' });
-      }
-  
-      return res.status(200).json(userProfile);
-    } catch (err) {
-      console.error(err);
-      return res.status(500).json({ message: 'Server error' });
+  try {
+    const { username, email } = req.params;
+
+    // Find user profile by username or email
+    const userProfile = await UserProfile.findOne({ $or: [{ username }, { email }] });
+
+    if (!userProfile) {
+      return res.status(404).json({ message: 'User profile not found.' });
     }
-  };
+
+    // Modify the country to return the first two characters in uppercase
+    if (userProfile.country) {
+      userProfile.country = userProfile.country.substring(0, 2).toUpperCase();
+    }
+
+    return res.status(200).json(userProfile);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
 
 export { createUserProfile, updateUserProfile, displayUserProfile };

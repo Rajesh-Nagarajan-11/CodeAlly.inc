@@ -1,5 +1,4 @@
-import { Users, Share2 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+
 import CountryFlag from './CountryFlag';
 import RankBadge from './RankBadge';
 import { countries } from '../lib/countries';
@@ -16,11 +15,10 @@ interface ProfileHeaderProps {
     };
     nextLevelExperience: number;
   };
-  cur_exp:number;
-  onShare: () => void;
+  cur_exp: number;
 }
 
-export default function ProfileHeader({ username, email, country, rank,cur_exp ,onShare }: ProfileHeaderProps) {
+export default function ProfileHeader({ username, email, country, rank, cur_exp }: ProfileHeaderProps) {
   return (
     <div className="mb-8">
       <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
@@ -28,13 +26,6 @@ export default function ProfileHeader({ username, email, country, rank,cur_exp ,
           <div>
             <div className="flex items-center gap-3">
               <h2 className="text-2xl font-bold text-gray-900">{username}</h2>
-              <button
-                onClick={onShare}
-                className="inline-flex items-center p-1.5 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"
-                title="Share Profile"
-              >
-                <Share2 className="w-4 h-4" />
-              </button>
             </div>
             <p className="text-gray-600">{email}</p>
             {country && (
@@ -46,13 +37,7 @@ export default function ProfileHeader({ username, email, country, rank,cur_exp ,
               </div>
             )}
           </div>
-          <Link
-            to="/friends"
-            className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"
-          >
-            <Users className="w-4 h-4 mr-2" />
-            My Friends
-          </Link>
+         
         </div>
         <div className="w-full md:w-64">
           <RankBadge

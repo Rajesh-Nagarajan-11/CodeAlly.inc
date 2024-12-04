@@ -8,6 +8,7 @@ export default function Navbar() {
   const username = sessionStorage.getItem("username");
 
   const handleLogout = () => {
+    localStorage.clear();
     sessionStorage.removeItem("username");
     navigate('/');
   };
