@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { Trophy, Eye, EyeOff } from 'lucide-react';
@@ -9,8 +9,19 @@ interface FormData {
   email: string;
   leetcodeUsername: string;
   gfgUsername: string;
+  codeforceUsername: string;
   password: string;
 }
+
+interface LeetcodeUserInfo {
+  gitHub: string;
+  linkedIN: string;
+  country: string;
+  school: string;
+  about: string;
+}
+
+const API_BASE_URL = 'http://localhost:3000';
 
 export default function Register() {
   const [formData, setFormData] = useState<FormData>({
@@ -18,31 +29,60 @@ export default function Register() {
     email: '',
     leetcodeUsername: '',
     gfgUsername: '',
+    codeforceUsername: '',
     password: '',
   });
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const [showPassword, setShowPassword] = useState(false); // For toggling password visibility
-  const navigate = useNavigate(); // For navigation
+  const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.id]: e.target.value,
-    }));
-  };
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({ ...prev, [id]: value }));
+  }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const togglePasswordVisibility = useCallback(() => {
+    setShowPassword(prev => !prev);
+  }, []);
+
+  const createUserProfile = useCallback(async (leetcodeData: LeetcodeUserInfo) => {
+    const profileData = {
+      username: formData.fullName,
+      email: formData.email,
+      country: leetcodeData.country || '',
+      college: leetcodeData.school || '',
+      githubUrl: leetcodeData.gitHub || '',
+      linkedinUrl: leetcodeData.linkedIN || '',
+      aboutUs: leetcodeData.about || '',
+    };
+
+    const response = await fetch(`${API_BASE_URL}/userprofile/create`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(profileData),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create user profile');
+    }
+
+    return response.json();
+  }, [formData.fullName, formData.email]);
+
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
     setSuccessMessage('');
 
     try {
-      // Make a POST request using fetch API
-      const response = await fetch('http://localhost:3000/api/auth/register', {
+      // Step 1: Register user
+      const registerResponse = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -50,178 +90,180 @@ export default function Register() {
         body: JSON.stringify(formData),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to register');
+      if (!registerResponse.ok) {
+        throw new Error('Registration failed');
       }
 
-      const data = await response.json();
-      if (data.message === 'User registered successfully') {
-        setSuccessMessage('Registration successful! You can now log in.');
-        setLoading(false);
-        setFormData({
-          fullName: '',
-          email: '',
-          leetcodeUsername: '',
-          gfgUsername: '',
-          password: '',
-        }); // Reset the form after successful registration
-        
-        // Navigate to login page
-        setTimeout(() => {
-          navigate('/login');
-        }, 2000); // Delay navigation to allow success message display
-      } else {
-        setError('Failed to register. Please try again later.'+error);
+      const registerData = await registerResponse.json();
+      setSuccessMessage(registerData.message);
+
+      // Step 2: Fetch LeetCode info
+      const leetcodeResponse = await fetch(`${API_BASE_URL}/leetcode/${formData.leetcodeUsername}`);
+      if (!leetcodeResponse.ok) {
+        throw new Error('Failed to fetch LeetCode information');
       }
+
+      const leetcodeData = await leetcodeResponse.json();
+      
+      // Step 3: Create user profile
+      await createUserProfile(leetcodeData);
+      
+      // Step 4: Navigate to login page on success
+      navigate('/login');
     } catch (err) {
-      console.error('Error registering user:', err);
-      setError('Failed to register. Please try again later.');
+      console.error('Error during registration:', err);
+      setError(err instanceof Error ? err.message : 'Failed to register. Please try again later.');
+    } finally {
       setLoading(false);
     }
-  };
-
-  const togglePasswordVisibility = () => {
-    setShowPassword(prev => !prev);
-  };
+  }, [formData, createUserProfile, navigate]);
 
   return (
-    <><Navbar /><div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="absolute inset-0 overflow-hidden">
-        <img
-          src="https://images.unsplash.com/photo-1516116216624-53e697fedbea"
-          alt="Background"
-          className="w-full h-full object-cover opacity-5" />
-      </div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="max-w-md w-full space-y-8 relative z-10"
-      >
-        <div>
-          <div className="flex justify-center">
-            <Trophy className="h-12 w-12 text-red-500" />
-          </div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
-            Create your account
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-400">
-            Already have an account?{' '}
-            <Link to="/login" className="font-medium text-red-500 hover:text-red-400">
-              Sign in
-            </Link>
-          </p>
+    <>
+      <Navbar />
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="absolute inset-0 overflow-hidden">
+          <img
+            src="https://images.unsplash.com/photo-1516116216624-53e697fedbea"
+            alt="Background"
+            className="w-full h-full object-cover opacity-5"
+          />
         </div>
 
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-700"></div>
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-gray-900 text-gray-400">Or continue with</span>
-          </div>
-        </div>
-
-        <form
-          className="mt-8 space-y-6 bg-white/10 backdrop-blur-lg p-8 rounded-xl"
-          onSubmit={handleSubmit}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="max-w-md w-full space-y-8 relative z-10"
         >
-          <div className="space-y-4">
-            {/* Form Fields */}
-            <div>
-              <label htmlFor="fullName" className="block text-sm font-medium text-gray-300">
-                Full Name
-              </label>
-              <input
-                id="fullName"
-                type="text"
-                required
-                value={formData.fullName}
-                onChange={handleChange}
-                className="mt-1 block w-full bg-gray-800/50 border border-gray-700 rounded-md px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                placeholder="Enter your full name" />
+          <div>
+            <div className="flex justify-center">
+              <Trophy className="h-12 w-12 text-red-500" />
             </div>
+            <h2 className="mt-6 text-center text-3xl font-extrabold text-white">Create your account</h2>
+            <p className="mt-2 text-center text-sm text-gray-400">
+              Already have an account?{' '}
+              <Link to="/login" className="font-medium text-red-500 hover:text-red-400">
+                Sign in
+              </Link>
+            </p>
+          </div>
 
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-300">
-                Email address
-              </label>
-              <input
-                id="email"
-                type="email"
-                required
-                value={formData.email}
-                onChange={handleChange}
-                className="mt-1 block w-full bg-gray-800/50 border border-gray-700 rounded-md px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                placeholder="Enter your email" />
-            </div>
-
-            <div>
-              <label htmlFor="leetcodeUsername" className="block text-sm font-medium text-gray-300">
-                LeetCode Username
-              </label>
-              <input
-                id="leetcodeUsername"
-                type="text"
-                required
-                value={formData.leetcodeUsername}
-                onChange={handleChange}
-                className="mt-1 block w-full bg-gray-800/50 border border-gray-700 rounded-md px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                placeholder="Enter your LeetCode username" />
-            </div>
-
-            <div>
-              <label htmlFor="gfgUsername" className="block text-sm font-medium text-gray-300">
-                GFG Username
-              </label>
-              <input
-                id="gfgUsername"
-                type="text"
-                required
-                value={formData.gfgUsername}
-                onChange={handleChange}
-                className="mt-1 block w-full bg-gray-800/50 border border-gray-700 rounded-md px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                placeholder="Enter your GFG username" />
-            </div>
-
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-300">
-                Password
-              </label>
-              <div className="relative">
+          <form className="mt-8 space-y-6 bg-white/10 backdrop-blur-lg p-8 rounded-xl" onSubmit={handleSubmit}>
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="fullName" className="block text-sm font-medium text-gray-300">
+                  Full Name
+                </label>
                 <input
-                  id="password"
-                  type={showPassword ? 'text' : 'password'}
+                  id="fullName"
+                  type="text"
                   required
-                  value={formData.password}
+                  value={formData.fullName}
                   onChange={handleChange}
                   className="mt-1 block w-full bg-gray-800/50 border border-gray-700 rounded-md px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                  placeholder="Create a password" />
-                <div
-                  onClick={togglePasswordVisibility}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
-                >
-                  {showPassword ? <EyeOff className="text-gray-400" /> : <Eye className="text-gray-400" />}
+                  placeholder="Enter your full name"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-300">
+                  Email address
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  required
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="mt-1 block w-full bg-gray-800/50 border border-gray-700 rounded-md px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                  placeholder="Enter your email"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="leetcodeUsername" className="block text-sm font-medium text-gray-300">
+                  LeetCode Username
+                </label>
+                <input
+                  id="leetcodeUsername"
+                  type="text"
+                  required
+                  value={formData.leetcodeUsername}
+                  onChange={handleChange}
+                  className="mt-1 block w-full bg-gray-800/50 border border-gray-700 rounded-md px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                  placeholder="Enter your LeetCode username"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="gfgUsername" className="block text-sm font-medium text-gray-300">
+                  GFG Username
+                </label>
+                <input
+                  id="gfgUsername"
+                  type="text"
+                  required
+                  value={formData.gfgUsername}
+                  onChange={handleChange}
+                  className="mt-1 block w-full bg-gray-800/50 border border-gray-700 rounded-md px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                  placeholder="Enter your GFG username"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="codeforceUsername" className="block text-sm font-medium text-gray-300">
+                  Codeforces Username
+                </label>
+                <input
+                  id="codeforceUsername"
+                  type="text"
+                  required
+                  value={formData.codeforceUsername}
+                  onChange={handleChange}
+                  className="mt-1 block w-full bg-gray-800/50 border border-gray-700 rounded-md px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                  placeholder="Enter your Codeforces username"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-300">
+                  Password
+                </label>
+                <div className="relative mt-1">
+                  <input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="block w-full bg-gray-800/50 border border-gray-700 rounded-md px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    placeholder="Enter your password"
+                  />
+                  <button
+                    type="button"
+                    onClick={togglePasswordVisibility}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  >
+                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
                 </div>
               </div>
+
+              {error && <p className="text-red-500 text-sm">{error}</p>}
+              {successMessage && <p className="text-green-500 text-sm">{successMessage}</p>}
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-md disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-200"
+              >
+                {loading ? 'Registering...' : 'Register'}
+              </button>
             </div>
-          </div>
-
-          {error && <p className="text-sm text-red-500">{error}</p>}
-          {successMessage && <p className="text-sm text-green-500">{successMessage}</p>}
-
-          <div>
-            <button
-              type="submit"
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent rounded-md text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
-              disabled={loading}
-            >
-              {loading ? 'Creating Account...' : 'Create Account'}
-            </button>
-          </div>
-        </form>
-      </motion.div>
-    </div></>
+          </form>
+        </motion.div>
+      </div>
+    </>
   );
 }

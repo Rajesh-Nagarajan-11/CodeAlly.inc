@@ -6,7 +6,7 @@ const JWT_SECRET = '2899556f8190993d5e8c37324e93c2ea4a871fe44be47b9b97be62f8a316
 
 // Register a new user
 export const registerUser = async (req, res) => {
-  const { fullName, email, leetcodeUsername, gfgUsername, password } = req.body;
+  const { fullName, email, leetcodeUsername, gfgUsername, codeforceUsername , password } = req.body;
 
   try {
     // Hash the password
@@ -18,6 +18,7 @@ export const registerUser = async (req, res) => {
       email,
       leetcodeUsername,
       gfgUsername,
+      codeforceUsername,
       password: hashedPassword,
     });
 

@@ -1,11 +1,10 @@
-import { LucideIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '../lib/util';
 
 interface StatsCardProps {
   title: string;
   value?: string | number;
-  icon?: LucideIcon;
+  icon?: string; // Change to a string for the image URL
   color?: string;
   imageUrl?: string;
   imageAlt?: string;
@@ -16,7 +15,7 @@ interface StatsCardProps {
 export function StatsCard({
   title,
   value,
-  icon: Icon,
+  icon, // Expecting an image URL now
   color = 'text-primary',
   imageUrl,
   imageAlt,
@@ -27,9 +26,10 @@ export function StatsCard({
     <div className={cn('rounded-xl border bg-card p-6 shadow-sm', className)}>
       <div className="flex items-center justify-between space-x-4">
         <div className="flex items-center space-x-4">
-          {Icon && (
+          {icon && (
             <div className={cn('p-2 rounded-lg', color)}>
-              <Icon className="h-5 w-5" />
+              {/* Render image if icon is a URL */}
+              <img src={icon} alt="Icon" className="h-10 w-10" />
             </div>
           )}
           <div>

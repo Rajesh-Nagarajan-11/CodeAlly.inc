@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Code, Brain, Award,Signal,SignalLowIcon,SignalMediumIcon} from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { StatsCard } from '../components/StatsCard';
 import Navbar from '../components/Navbar';
+import PlatformStats from '../components/PlatformStats';
+
 
 
 
@@ -14,10 +15,9 @@ interface UserProfile {
     email: string;
     leetcodeUsername: string;
     gfgUsername: string;
+    codeforceUsername:string;
   };
 }
-
-
 interface LeetCodeStats {
   solvedProblem: number;
   easySolved: number;
@@ -35,6 +35,16 @@ interface GfGstats{
         HARD: number;   
     }
 }
+
+interface codeforcesStats{
+    totalsolved:number,
+    easysolved: number,
+    mediumsolved: number,
+    hardsolved: number,
+    extremesolved: number,
+    unratingsolved: number
+}
+
 interface leetbadger{
   badges:[
     {
@@ -63,6 +73,7 @@ export default function Dashboard() {
   const[gfgstats,setgfgstats]=useState <GfGstats | null> (null);
   const[skillstats,setskillstats]=useState<SkillStats |null> (null);
   const[leetbadge,setleetbadge]=useState<leetbadger | null>(null);
+  const[codeforcesStats,setcodeforcesStats]=useState<codeforcesStats |null>(null);
   const [loading, setLoading] = useState(true);
 
   // Fetch user profile data
@@ -145,6 +156,24 @@ export default function Dashboard() {
             console.log('Error Fecthing leetcode skill stats :'+error)
           })
         }
+
+        if(data.user.codeforceUsername)
+        {
+          fetch(`http://localhost:3000/codeforce/${data.user.codeforceUsername}`,{
+            method:'GET',
+          }).then((response)=>
+          {
+            if(!response.ok)
+              throw new Error(`HTTP error ! status : ${response.status}`);
+              return response.json()
+          })
+          .then((codeforcesStats)=>{
+            setcodeforcesStats(codeforcesStats);
+          })
+          .catch((error)=>{
+            console.log('Error Fecthing codeforces skill stats :'+error)
+          })
+        }
       //console.log(skillstats?.data.matchedUser.tagProblemCounts.fundamental);
       //fundamental?.forEach(element => {
       //console.log(element.tagName)
@@ -157,6 +186,8 @@ export default function Dashboard() {
         })
         .finally(() => setLoading(false));
     }
+    
+
   }, []);
   console.log(userData?.user.fullName);
 
@@ -189,6 +220,28 @@ export default function Dashboard() {
   advanced?.forEach(element =>{
     advancedcnt+=element.problemsSolved;
   })
+  const platformData = [
+    {
+      name: 'Leetcode',
+      easy: leetcodeStats?.easySolved || 0,
+      medium: leetcodeStats?.mediumSolved ||0,
+      hard: leetcodeStats?.hardSolved || 0,
+    },
+    {
+      name: 'GFG',
+      easy: gfgstats?.details.EASY || 0,
+      medium: gfgstats?.details.MEDIUM || 0,
+      hard: gfgstats?.details.HARD || 0,
+    },
+    {
+      name: 'Codeforces',
+      easy: codeforcesStats?.easysolved || 0,
+      medium: codeforcesStats?.mediumsolved || 0,
+      hard: codeforcesStats?.hardsolved || 0,
+      violet: codeforcesStats?.extremesolved || 0,
+    },
+  ];
+  
   ; 
   return (
     <><Navbar /><div className="min-h-[calc(100vh-4rem)] bg-gray-50 py-8">
@@ -213,9 +266,9 @@ export default function Dashboard() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <StatsCard
-              title="LeetCode Stats"
+              title="Leetcode Stats"
               value={leetcodeStats ? `${leetcodeStats.solvedProblem}/3368` : 'Loading...'}
-              icon={Code}
+              icon="https://cdn.iconscout.com/icon/free/png-512/free-leetcode-logo-icon-download-in-svg-png-gif-file-formats--technology-social-media-vol-4-pack-logos-icons-2944960.png?f=webp&w=256"
               color="text-blue-500"
               className="hover:shadow-lg transition-shadow duration-300"
             >
@@ -236,9 +289,9 @@ export default function Dashboard() {
             </StatsCard>
 
             <StatsCard
-              title="GeeksforGeeks Stats"
+              title="Geeks for Geeks Stats"
               value={gfgstats ? `${gfgstats.totalProblemsSolved}` : 'Loading...'}
-              icon={Brain}
+              icon="https://img.icons8.com/color/512/GeeksforGeeks.png"
               color="text-green-500"
               className="hover:shadow-lg transition-shadow duration-300"
             >
@@ -258,9 +311,39 @@ export default function Dashboard() {
               </div>
             </StatsCard>
 
+                        <StatsCard
+              title="Codeforces Stats"
+              value={codeforcesStats ? `${codeforcesStats.totalsolved}` : 'Loading...'}
+              icon="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3LVEIg_6x2wqlPG8pruOUnUi-wEvnw1eC0w&s"
+              color="text-purple-500"
+              className="hover:shadow-lg transition-shadow duration-300">                     
+              <div className="mt-2 space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span>Easy Problems:</span>
+                  <span className="font-medium">{codeforcesStats?.easysolved || 0}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Medium Problems:</span>
+                  <span className="font-medium">{codeforcesStats?.mediumsolved || 0}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Hard Problems:</span>
+                  <span className="font-medium">{codeforcesStats?.hardsolved || 0}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Extreme Problems:</span>
+                  <span className="font-medium">{codeforcesStats?.extremesolved || 0}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>UnRated Problems:</span>
+                  <span className="font-medium">{codeforcesStats?.unratingsolved || 0}</span>
+                </div>
+              </div>
+            </StatsCard>
+
             <StatsCard
               title="Recent Award"
-              icon={Award}
+              icon="https://cdn-icons-png.flaticon.com/512/8092/8092389.png"
               color="text-yellow-500"
               imageUrl={leetbadge?.badges[0] != null ? isFullLink(leetbadge.badges[0].icon) ? leetbadge.badges[0].icon : "https://leetcode.com" + leetbadge.badges[0].icon : "https://static.vecteezy.com/system/resources/previews/008/255/803/non_2x/page-not-found-error-404-system-updates-uploading-computing-operation-installation-programs-system-maintenance-a-hand-drawn-layout-template-of-a-broken-robot-illustration-vector.jpg"}
               className="hover:shadow-lg transition-shadow duration-300">
@@ -270,6 +353,18 @@ export default function Dashboard() {
 
             </StatsCard>
 
+            
+   
+  <div className="p-8 rounded-xl hover:shadow-lg transition-shadow duration-300 flex items-center justify-center  border " style={{ width: '500px', height: '400px' }}>
+  <div className="w-full h-full bg-white/25 backdrop-blur-lg rounded-xl">
+    <PlatformStats
+      className="w-full h-full"
+      data={platformData}
+      title="Your Coding Progress"
+    />
+  </div>
+</div>
+
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -277,7 +372,7 @@ export default function Dashboard() {
             <StatsCard
               title="Fundamentals"
               value={fundamentalcnt + ' Points'} // You can replace this with a dynamic value if needed
-              icon={SignalLowIcon}
+              icon="https://static.vecteezy.com/system/resources/previews/015/386/162/non_2x/line-icon-for-fundamental-vector.jpg"
               color="text-green-500"
               className="hover:shadow-lg transition-shadow duration-300"
             >
@@ -294,7 +389,7 @@ export default function Dashboard() {
             <StatsCard
               title="Intermediate"
               value={intermediatecnt + ' Points'}
-              icon={SignalMediumIcon}
+              icon="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLAYydZD34xRKhxIJ80r43ZyVVlMfUtu-05A&s"
               color="text-orange-500"
               className="hover:shadow-lg transition-shadow duration-300"
             >
@@ -310,7 +405,7 @@ export default function Dashboard() {
             <StatsCard
               title="Advanced"
               value={advancedcnt + ' Points'}
-              icon={Signal}
+              icon="https://cdn-icons-png.flaticon.com/512/6671/6671884.png"
               color="text-red-500"
               className="hover:shadow-lg transition-shadow duration-300"
             >
