@@ -481,6 +481,15 @@ export default function Dashboard() {
 
         </motion.div>
       </div>
-    </div></>
+    </div>
+    <footer className="bg-white text-black py-4 mt-8">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <p>&copy; {new Date().getFullYear()} CodeAlly.inc. All rights reserved.</p>
+    <p>Contact: <span className="ml-2 text-blue-400 hover:underline">codeally.inc@gmail.com</span></p>
+  </div>
+</footer>
+
+
+</>
   );
 }

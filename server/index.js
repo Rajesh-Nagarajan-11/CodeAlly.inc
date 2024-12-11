@@ -9,6 +9,7 @@ import gfgroutes from './routes/gfgroutes.js'
 import codeforceroutes from './routes/codeforceroutes.js'
 import motivationalRoutes from './routes/motivationalRoutes.js';
 import UserProfileRoutes from './routes/userProfileRoutes.js';
+import otproutes from './routes/otproutes.js'
 dotenv.config();
 
 const app = express();
@@ -24,6 +25,7 @@ app.use('/gfg',gfgroutes);
 app.use('/codeforce',codeforceroutes);
 app.use('/motivational',motivationalRoutes)
 app.use('/userprofile',UserProfileRoutes)
+app.use('/resetpassword',otproutes)
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI_CODEALLY)
@@ -50,6 +52,10 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log("http Endpoints : \n  http://localhost:3000/api/auth/login : User login , Method = POST \n  http://localhost:3000/api/auth/register : New user Register , method = POST");
   console.log("  http://localhost:3000/api/user/profile : get user details , method=GET")
+  console.log("  http://localhost:3000/api/user/check-email : check user exists or not , Method=GET")
+  console.log("  http://localhost:3000/api/auth/updatepassword : reset password , Method = PUT")
+  console.log("  http://localhost:3000/resetpassword/send-otp : send otp for resetpassword , Method = POST")
+  console.log("  http://localhost:3000/resetpassword/verify-otp : verify the otp , Method = POST")
   console.log("  http://localhost:3000/leetcode/skillStats/username : get skill Stats , method =GET")
   console.log("  http://localhost:3000/leetcode/username : get leetcode stats , method=GET \n  http://localhost:3000/leetcode/username/solved : Get No of solved problems , method = GET");
   console.log("  http://localhost:3000/leetcode/username/badges : Get badges earned by users , method = GET");

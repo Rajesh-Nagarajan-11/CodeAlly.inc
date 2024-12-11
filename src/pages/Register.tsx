@@ -11,6 +11,7 @@ interface FormData {
   gfgUsername: string;
   codeforceUsername: string;
   password: string;
+  confirmPassword: string; // Added confirmPassword
 }
 
 interface LeetcodeUserInfo {
@@ -31,12 +32,14 @@ export default function Register() {
     gfgUsername: '',
     codeforceUsername: '',
     password: '',
+    confirmPassword: '', // Initialize confirmPassword state
   });
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // State to toggle confirm password visibility
   const navigate = useNavigate();
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,6 +49,10 @@ export default function Register() {
 
   const togglePasswordVisibility = useCallback(() => {
     setShowPassword(prev => !prev);
+  }, []);
+
+  const toggleConfirmPasswordVisibility = useCallback(() => {
+    setShowConfirmPassword(prev => !prev);
   }, []);
 
   const createUserProfile = useCallback(async (leetcodeData: LeetcodeUserInfo) => {
@@ -79,6 +86,12 @@ export default function Register() {
     setLoading(true);
     setError('');
     setSuccessMessage('');
+
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      setLoading(false);
+      return;
+    }
 
     try {
       // Step 1: Register user
@@ -230,35 +243,61 @@ export default function Register() {
                 <label htmlFor="password" className="block text-sm font-medium text-gray-300">
                   Password
                 </label>
-                <div className="relative mt-1">
+                <div className="relative">
                   <input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
                     required
                     value={formData.password}
                     onChange={handleChange}
-                    className="block w-full bg-gray-800/50 border border-gray-700 rounded-md px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    className="mt-1 block w-full bg-gray-800/50 border border-gray-700 rounded-md px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
                     placeholder="Enter your password"
                   />
                   <button
                     type="button"
                     onClick={togglePasswordVisibility}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400"
                   >
                     {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
                 </div>
               </div>
 
-              {error && <p className="text-red-500 text-sm">{error}</p>}
-              {successMessage && <p className="text-green-500 text-sm">{successMessage}</p>}
+              <div>
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300">
+                  Confirm Password
+                </label>
+                <div className="relative">
+                  <input
+                    id="confirmPassword"
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    required
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    className="mt-1 block w-full bg-gray-800/50 border border-gray-700 rounded-md px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    placeholder="Confirm your password"
+                  />
+                  <button
+                    type="button"
+                    onClick={toggleConfirmPasswordVisibility}
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400"
+                  >
+                    {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
+                </div>
+              </div>
+            </div>
 
+            {error && <p className="text-red-500 text-sm">{error}</p>}
+            {successMessage && <p className="text-green-500 text-sm">{successMessage}</p>}
+
+            <div>
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-md disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-200"
+                className={`w-full bg-red-600 text-white rounded-md py-2 px-4 text-lg font-semibold ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
-                {loading ? 'Registering...' : 'Register'}
+                {loading ? 'Creating account...' : 'Create Account'}
               </button>
             </div>
           </form>

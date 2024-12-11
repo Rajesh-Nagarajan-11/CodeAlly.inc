@@ -37,3 +37,22 @@ export const getUserProfile = async (req, res) => {
     res.status(500).json({ message: 'Error retrieving user details', error: err.message });
   }
 };
+
+export const checkEmailExists = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // Check if the email exists in the database
+    const user = await User.findOne({ email });
+    
+    if (user) {
+      // If user exists, return response with exists: true
+      return res.status(200).json({ exists: true });
+    } else {
+      // If user does not exist, return response with exists: false
+      return res.status(404).json({ exists: false, message: 'No user found with this email.' });
+    }
+  } catch (err) {
+    res.status(500).json({ message: 'Error checking email existence', error: err.message });
+  }
+};

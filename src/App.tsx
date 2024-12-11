@@ -7,6 +7,7 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import CodeOptimization from './pages/CodeOptimization';
 import UserProfile from './pages/UserProfile';
+import ForgotPassword from './pages/forgotpassword';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/userprofile" element={<UserProfile/>}/>
             <Route path="/code" element={<CodeOptimization/>}/>
+            <Route path="/forgot-password" element={<ForgotPassword/>}/>
           </Routes>
         </motion.div>
       </div>

@@ -56,3 +56,32 @@ export const loginUser = async (req, res) => {
     res.status(500).json({ message: 'Error logging in', error: err.message });
   }
 };
+
+// Update password
+export const updatePassword = async (req, res) => {
+  const { email, newPassword } = req.body;
+
+  if (!newPassword) {
+    return res.status(400).json({ message: 'New password is required' });
+  }
+
+  try {
+    // Find the user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: 'User not found' });
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update the user's password
+    user.password = hashedPassword;
+    await user.save();
+
+    res.status(200).json({ message: 'Password updated successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Error updating password', error: err.message });
+  }
+};
+
