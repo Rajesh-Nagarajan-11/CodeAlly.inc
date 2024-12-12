@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { Trophy, Eye, EyeOff } from 'lucide-react';
 import Navbar from '../components/Navbar';
+import CopyrightFooter from '../components/CopyrightFooter';
 
 interface FormData {
   fullName: string;
@@ -303,6 +304,7 @@ export default function Register() {
           </form>
         </motion.div>
       </div>
+      <CopyrightFooter />
     </>
   );
 }

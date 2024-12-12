@@ -3,6 +3,7 @@ import {Trophy, Rocket, Target } from 'lucide-react';
 import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import CopyrightFooter from '../components/CopyrightFooter';
 
 export default function Landing() {
   const ref = useRef(null);
@@ -136,6 +137,7 @@ export default function Landing() {
           </motion.div>
         </div>
       </div>
-    </div></>
+    </div>      <CopyrightFooter />
+    </>
   );
 }

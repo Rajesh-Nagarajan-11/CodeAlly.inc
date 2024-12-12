@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { Trophy, Eye, EyeOff } from 'lucide-react';
 import Navbar from '../components/Navbar';
-
+import CopyrightFooter from '../components/CopyrightFooter';
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -146,6 +146,7 @@ export default function Login() {
           </form>
         </motion.div>
       </div>
+      <CopyrightFooter />
     </>
   );
 }

@@ -4,6 +4,7 @@ import CountrySelect from '../components/CountrySelect';
 import ProfileHeader from '../components/ProfileHeader';
 import { calculateRank } from '../lib/ranks';
 import Navbar from '../components/Navbar';
+import CopyrightFooter from '../components/CopyrightFooter';
 
 interface userdata {
   _id: string;
@@ -340,12 +341,7 @@ export default function UserProfile() {
           </div>
         </div>
       </div>
-      <footer className="bg-white text-black py-4 mt-8">
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-    <p>&copy; {new Date().getFullYear()} CodeAlly.inc. All rights reserved.</p>
-    <p>Contact: <span className="ml-2 text-blue-400 hover:underline">codeally.inc@gmail.com</span></p>
-  </div>
-</footer>
+      <CopyrightFooter />
     </>
   );
 }

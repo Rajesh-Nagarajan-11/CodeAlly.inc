@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Clock, Database, Plus } from 'lucide-react';
 import CodeEditor from '../components/CodeEditor';
 import Navbar from '../components/Navbar';
+import CopyrightFooter from '../components/CopyrightFooter';
 
 export default function CodeOptimization() {
   return (
@@ -142,6 +143,7 @@ export default function CodeOptimization() {
           </motion.div>
         </div>
       </div>
-    </div></>
+    </div>
+    <CopyrightFooter /></>
   );
 }
