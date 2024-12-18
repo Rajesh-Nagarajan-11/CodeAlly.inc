@@ -316,7 +316,7 @@ export default function Dashboard() {
 </div>
 
 <Link
-  to="/code"
+  to="https://gilded-liger-66376f.netlify.app/"
   className="bg-red-500 text-white px-6 py-3 rounded-md hover:bg-red-600 transition-colors mt-4 inline-block"
 >
   Start Coding

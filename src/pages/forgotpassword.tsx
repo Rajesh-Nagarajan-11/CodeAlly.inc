@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { Trophy, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import axios from 'axios'; // Using axios for API calls
-import CopyrightFooter from '../components/CopyrightFooter';
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
@@ -308,7 +307,6 @@ export default function ForgotPassword() {
               </button>
             </form>
           ) : null}
-           <CopyrightFooter />
         </div>
       </motion.div>
     </div>
